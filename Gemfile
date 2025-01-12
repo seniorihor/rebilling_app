@@ -48,9 +48,7 @@ group :development, :test do
   # Use RSpec for testing Rails applications
   gem "rspec-rails"
   gem "factory_bot_rails"
-end
 
-group :test do
   # Additional matchers for RSpec
   gem "shoulda-matchers", "~> 6.0"
 end

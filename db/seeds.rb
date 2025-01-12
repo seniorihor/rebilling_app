@@ -25,5 +25,5 @@ Subscription.all.each do |subscription|
     puts "    - Log ##{log.id} (#{log.status}): #{log.amount}"
   end
 
-  puts "  Current status:  #{subscription.reload.status}"
+  puts "  Current status: #{subscription.reload.status}"
 end

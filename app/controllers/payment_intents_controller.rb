@@ -1,4 +1,4 @@
-require 'ostruct'
+require "ostruct"
 
 class PaymentIntentsController < ApplicationController
   def create
@@ -17,9 +17,9 @@ class PaymentIntentsController < ApplicationController
     # Return a response object with success? and error_code methods
 
     success, error_code = [
-      [true, nil],
-      [false, 'insufficient_funds'],
-      [false, 'other_error']
+      [ true, nil ],
+      [ false, "insufficient_funds" ],
+      [ false, "other_error" ]
     ].sample
 
     OpenStruct.new(success?: success, error_code: error_code)
@@ -27,11 +27,11 @@ class PaymentIntentsController < ApplicationController
 
   def response_status(response)
     if response.success?
-      'success'
-    elsif response.error_code == 'insufficient_funds'
-      'insufficient_funds'
+      "success"
+    elsif response.error_code == "insufficient_funds"
+      "insufficient_funds"
     else
-      'failed'
+      "failed"
     end
   end
 end

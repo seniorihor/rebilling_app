@@ -4,7 +4,25 @@
 
 Follow these steps to set up the Rebilling App project on your local machine:
 
-### Steps
+### Steps (with docker)
+
+1. **Build docker image:**
+  ```sh
+    docker build -t rebilling_app .
+  ```
+
+2. **Run container:**
+  ```sh
+    # rails server will run automatically
+    docker run -p 3000:3000 --name rebilling_app rebilling_app
+  ```
+
+3. **Connect to container:**
+  ```sh
+    docker exec -it rebilling_app sh
+  ```
+
+### Steps (without docker)
 
 1. **Install dependencies:**
   ```sh
@@ -13,29 +31,28 @@ Follow these steps to set up the Rebilling App project on your local machine:
 
 2. **Set up the database:**
   ```sh
-  rails db:create
-  rails db:migrate
-  rails db:seed
+  bundle exec rails db:create
+  bundle exec rails db:migrate
   ```
 
 3. **Start the Rails server:**
   ```sh
-  rails server
+    bundle exec rails server
   ```
-
 
 ### Running Tests
 
 To run the test suite, execute:
 ```sh
-rspec
+  bundle exec rspec
 ```
 
-## Symulate Rebilling
+## Simulate Rebilling
 
-To symulate the rebilling process, you can use seeds creation with the following command:
+You need to have the rails server running on port 3000.
+To simulate the rebilling process, run the seeds creation with the following command:
 ```sh
-rails db:seed
+  bundle exec rails db:seed
 ```
 
-\* To see how it works with old (active/inavtive) subscriptions, you can run it twice
+\* To see how it works with old (active/inactive) subscriptions, you can run it several times

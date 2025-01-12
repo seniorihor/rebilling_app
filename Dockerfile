@@ -19,8 +19,8 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Set production environment
-ENV RAILS_ENV="production" \
+# Set development environment
+ENV RAILS_ENV="development" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"
@@ -35,18 +35,13 @@ RUN apt-get update -qq && \
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+RUN bundle install
 
 # Copy application code
 COPY . .
 
 # Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
-
-
-
+# RUN bundle exec bootsnap precompile app/ lib/
 
 # Final stage for app image
 FROM base
@@ -66,4 +61,4 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
 EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+CMD ["./bin/rails", "server"]

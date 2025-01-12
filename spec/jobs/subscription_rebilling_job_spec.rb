@@ -15,7 +15,7 @@ RSpec.describe SubscriptionRebillingJob, type: :job do
     end
 
     context 'when subscription is not pending' do
-      let(:status) { ['active', 'failed'].sample }
+      let(:status) { [ 'active', 'failed' ].sample }
       let(:next_retry_at) { 1.hour.ago }
 
       it 'does not process the payment' do

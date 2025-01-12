@@ -1,7 +1,7 @@
 class Subscription < ApplicationRecord
   STATUSES = %i[active inactive pending].freeze
 
-  has_many :logs, class_name: 'Subscription::Log', dependent: :destroy
+  has_many :logs, class_name: "Subscription::Log", dependent: :destroy
 
   scope :pending, -> { where(status: :pending) }
 

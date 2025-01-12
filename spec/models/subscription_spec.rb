@@ -23,7 +23,7 @@ RSpec.describe Subscription, type: :model do
 
   describe 'constants' do
     it 'defines STATUSES' do
-      expect(Subscription::STATUSES).to eq([:active, :inactive, :pending])
+      expect(Subscription::STATUSES).to eq([ :active, :inactive, :pending ])
     end
   end
 end
@@ -38,7 +38,7 @@ describe 'status methods' do
       end
 
       it "returns false when status is not #{status}" do
-        (Subscription::STATUSES - [status]).each do |other_status|
+        (Subscription::STATUSES - [ status ]).each do |other_status|
           subscription.status = other_status.to_s
           expect(subscription.send("#{status}?")).to be false
         end

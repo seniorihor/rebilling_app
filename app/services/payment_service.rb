@@ -1,14 +1,14 @@
-require 'net/http'
-require 'uri'
-require 'json'
+require "net/http"
+require "uri"
+require "json"
 
 # PaymentService is responsible for processing payments for subscriptions.
 # It handles both full payments and remaining balance payments, and manages retry attempts
 # in case of insufficient funds.
 class PaymentService
   # An array of percentages used to reduce the payment amount on retries.
-  RETRY_PERCENTAGES = [1.0, 0.75, 0.50, 0.25].freeze
-  GATEAWAY_URL = 'http://localhost:3000/paymentIntents/create'.freeze
+  RETRY_PERCENTAGES = [ 1.0, 0.75, 0.50, 0.25 ].freeze
+  GATEAWAY_URL = "http://localhost:3000/paymentIntents/create".freeze
 
   attr_reader :subscription
 
@@ -42,23 +42,23 @@ class PaymentService
   #
   # @return [void]
   def process_payment
-    retry_percentage = RETRY_PERCENTAGES[@subscription.retry_attempts]
-    amount_to_charge = @subscription.amount * retry_percentage
+    retry_percentage = RETRY_PERCENTAGES[subscription.retry_attempts]
+    amount_to_charge = subscription.amount * retry_percentage
     response = charge_card(amount_to_charge)
 
-    @subscription.logs.create!(amount: amount_to_charge, status: response['status'])
+    subscription.logs.create!(amount: amount_to_charge, status: response["status"])
 
-    case response['status']
-    when 'success'
+    case response["status"]
+    when "success"
       handle_successful_payment(amount_to_charge)
-    when 'insufficient_funds'
+    when "insufficient_funds"
       retry_payment_with_reduced_amount
-    when 'failed'
-      @subscription.deactivate!
+    when "failed"
       # Handle failed payment error
+      subscription.deactivate!
     else
-      @subscription.deactivate!
       # Handle other payment errors
+      subscription.deactivate!
     end
   end
 
@@ -69,9 +69,9 @@ class PaymentService
   def process_remaining_payment
     response = charge_card(subscription.remaining_balance)
 
-    @subscription.logs.create!(amount: subscription.remaining_balance, status: response['status'])
+    subscription.logs.create!(amount: subscription.remaining_balance, status: response["status"])
 
-    if response['status'] == 'success'
+    if response["status"] == "success"
       subscription.activate!
     else
       subscription.deactivate!
@@ -90,7 +90,7 @@ class PaymentService
   def charge_card(amount)
     uri = URI.parse(GATEAWAY_URL)
     request = Net::HTTP::Post.new(uri)
-    request.set_form_data("amount" => amount, "subscription_id" => @subscription.id)
+    request.set_form_data("amount" => amount, "subscription_id" => subscription.id)
 
     response = Net::HTTP.start(uri.hostname, uri.port) do |http|
       http.request(request)
@@ -108,12 +108,12 @@ class PaymentService
   # If there is a remaining balance, the subscription status is set to :pending and the next retry attempt is scheduled.
   # If the payment covers the full amount, the subscription status is set to :active.
   def handle_successful_payment(amount)
-    remaining_balance = @subscription.amount - amount
+    remaining_balance = subscription.amount - amount
 
     if remaining_balance > 0
-      @subscription.update(status: :pending, retry_attempts: 0, remaining_balance: remaining_balance, next_retry_at: 1.week.from_now)
+      subscription.update(status: :pending, retry_attempts: 0, remaining_balance: remaining_balance, next_retry_at: 1.week.from_now)
     else
-      @subscription.activate!
+      subscription.activate!
     end
   end
 
@@ -124,12 +124,12 @@ class PaymentService
   #
   # @return [void]
   def retry_payment_with_reduced_amount
-    if @subscription.retry_attempts < RETRY_PERCENTAGES.size - 1
-      @subscription.increment!(:retry_attempts)
+    if subscription.retry_attempts < RETRY_PERCENTAGES.size - 1
+      subscription.increment!(:retry_attempts)
 
       process_payment
     else
-      @subscription.deactivate!
+      subscription.deactivate!
     end
   end
 end
