@@ -1,9 +1,29 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+subscriptions = [
+  { amount: 1000, status: 'pending', retry_attempts: 0, remaining_balance: 0, next_retry_at: Time.current },
+  { amount: 1000, status: 'pending', retry_attempts: 0, remaining_balance: 0, next_retry_at: Time.current },
+  { amount: 1000, status: 'pending', retry_attempts: 0, remaining_balance: 0, next_retry_at: Time.current },
+  { amount: 1000, status: 'pending', retry_attempts: 0, remaining_balance: 0, next_retry_at: Time.current },
+  { amount: 1000, status: 'pending', retry_attempts: 0, remaining_balance: 0, next_retry_at: Time.current },
+  { amount: 1000, status: 'pending', retry_attempts: 0, remaining_balance: 0, next_retry_at: Time.current },
+  { amount: 1000, status: 'pending', retry_attempts: 0, remaining_balance: 0, next_retry_at: Time.current },
+  { amount: 1000, status: 'pending', retry_attempts: 0, remaining_balance: 0, next_retry_at: Time.current },
+  { amount: 1000, status: 'pending', retry_attempts: 0, remaining_balance: 0, next_retry_at: Time.current },
+  { amount: 1000, status: 'pending', retry_attempts: 0, remaining_balance: 0, next_retry_at: Time.current }
+].map do |attrs|
+  Subscription.create!(attrs)
+end
+
+# Simulate rebilling attempts and display logs
+Subscription.all.each do |subscription|
+  puts "\nSubscription ##{subscription.id} (#{subscription.status})#{' (OLD)' if subscriptions.exclude?(subscription)}:"
+
+  subscription.update!(next_retry_at: Time.current) if subscription.next_retry_at
+
+  SubscriptionRebillingJob.perform_now(subscription.id)
+
+  subscription.logs.order(:id).each do |log|
+    puts "    - Log ##{log.id} (#{log.status}): #{log.amount}"
+  end
+
+  puts "  Current status:  #{subscription.reload.status}"
+end

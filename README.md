@@ -1,24 +1,41 @@
-# README
+# Rebilling App
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Setup Project
 
-Things you may want to cover:
+Follow these steps to set up the Rebilling App project on your local machine:
 
-* Ruby version
+### Steps
 
-* System dependencies
+1. **Install dependencies:**
+  ```sh
+  bundle install
+  ```
 
-* Configuration
+2. **Set up the database:**
+  ```sh
+  rails db:create
+  rails db:migrate
+  rails db:seed
+  ```
 
-* Database creation
+3. **Start the Rails server:**
+  ```sh
+  rails server
+  ```
 
-* Database initialization
 
-* How to run the test suite
+### Running Tests
 
-* Services (job queues, cache servers, search engines, etc.)
+To run the test suite, execute:
+```sh
+rspec
+```
 
-* Deployment instructions
+## Symulate Rebilling
 
-* ...
+To symulate the rebilling process, you can use seeds creation with the following command:
+```sh
+rails db:seed
+```
+
+\* To see how it works with old (active/inavtive) subscriptions, you can run it twice
